@@ -15,3 +15,7 @@ base.txt
 local.py
 __pycache__
 /.idea/
+results/bad/Screens/
+results/ok/Screens/
+tables/Screens/
+
