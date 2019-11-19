@@ -190,7 +190,8 @@ def parse_image(img: Image, filename):
                 if match:  # Got AP!
                     ap = int(match.group(1))
                     # Get medal part
-                    prime_tr_img = img.crop((int(img.width / 4), pink_lines[1] - int(prime_height / 2), int(img.width * 3 / 4), pink_lines[1] + int(prime_height * 2 / 3)))
+                    prime_tr_img = img.crop((int(img.width / 4), pink_lines[1] - int(prime_height / 2) - 10,
+                                             int(img.width * 3 / 4), pink_lines[1] + int(prime_height * 2 / 3) + 10))
                     if debug_level >= 1:
                         prime_tr_img.save("tables/" + filename + "_val.png")
                     # OCR, get name and value, replace letters in val
