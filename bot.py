@@ -18,11 +18,10 @@ import pytz
 import multiprocessing
 
 # telebot.apihelper.proxy = {'https': 'socks5h://login:password@host:port'}
-telebot.apihelper.proxy = {'https': 'socks5h://botfs:mQspYoodUWrsMe0A@node3.rikkitikki.tk:5080'}
 
 EVENT_TIMEZONE = 'Europe/Moscow'  # Put event timezone here
-API_TOKEN = "1034734119:AAGVbDFGXV8ZzugVjMzEw0szr4f2nfypayc"  # Put bot token here
-ADMINS = ['rikkitikkitakki','StarryEdhel']  # Put telegram-names of admins here
+API_TOKEN = ""  # Put bot token here
+ADMINS = ['']  # Put telegram-names of admins here
 TEST_MODE = True  # Allow send same data
 UNKNOWN_AGENTS = True  # Get data from unregistered agents
 MODES = ["Trekker", "Builder"]  # List medals for current event
@@ -46,6 +45,8 @@ try:
     import local
 
     redefined = dir(local)
+    if "PROXY" in redefined:
+         telebot.apihelper.proxy = local.PROXY
     if "THREAD_COUNT" in redefined:
         THREAD_COUNT = local.THREAD_COUNT
     if "EVENT_TIMEZONE" in redefined:
