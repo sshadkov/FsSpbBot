@@ -417,6 +417,9 @@ def doubled(img: Image):
 
 
 def crop_primeap(img: Image):
+    if os.environ.get('OS', '') == 'Windows_NT':
+        pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
     pxls = tuple(img.getdata())
     backs = find_lines(pxls, img.width, (0, 0, img.width, img.height), [(0, 0, 0)], 30, 5, 0)
     if len(backs) == 2:
@@ -493,7 +496,7 @@ def parse_image(img: Image, filename):
             prime_height = prime_backs[0] - pink_lines[0]
             # Extract AP to IMG
             prime_ap_img = img.crop(
-                (int(img.width * 0.1), prime_backs[0] - int(prime_height * 1.6), img.width, prime_backs[0]))
+                (int(img.width * 0.1), prime_backs[0] - int(prime_height * 1.7), img.width, prime_backs[0]))
             if debug_level >= 1:
                 prime_ap_img.save("tables/" + filename + "_ap.png")
 

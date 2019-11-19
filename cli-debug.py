@@ -7,6 +7,8 @@ import re
 import sys
 import difflib
 from functools import reduce
+import os
+
 
 MODES = ["Explorer", "XM Collected", "Trekker", "Builder", "Connector", "Mind Controller", "Illuminator", "Recharger", "Liberator", "Pioneer", "Engineer", "Purifier", "Portal Destroy", "Links Destroy", "Fields Destroy", "SpecOps", "Hacker", "Translator"]
 #MODES = ["Trekker"]
@@ -46,7 +48,8 @@ def color_diff(px: tuple, color: tuple):
     return abs(px[0]-color[0]) + abs(px[1]-color[1]) + abs(px[2]-color[2])
 
 
-def find_lines(pixels: tuple, width: int, rect: tuple, colors: list, threshhold: int, min_width: int = 1, find_count: int = 0, average: bool = True, horizontal: bool = True):
+def find_lines(pixels: tuple, width: int, rect: tuple, colors: list, threshhold: int, min_width: int = 1,
+               find_count: int = 0, average: bool = True, horizontal: bool = True):
     x_range = rect[2]-rect[0] if horizontal else rect[3]-rect[1]
     y_start = rect[1] if horizontal else rect[0]
     y_end = rect[3] if horizontal else rect[2]
@@ -94,8 +97,12 @@ def doubled(img: Image):
 
 
 def crop_primeap(img: Image):
+    if os.environ.get('OS', '') == 'Windows_NT':
+        pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
     pxls = tuple(img.getdata())
     backs = find_lines(pxls, img.width, (0, 0, img.width, img.height), [(0, 0, 0)], 30, 5, 0)
+    print(len(backs))
     if len(backs) == 2:
         ap_img = img.crop((0, backs[0], img.width, backs[1] + 10))
         pxls = tuple(ap_img.getdata())
@@ -155,14 +162,18 @@ def parse_image(img: Image, filename):
 
     # Find pink lines (1 - above AP, 2 - in medal)
     pink_lines = find_lines(pxls, img.width, (int(img.width * 0.3), 0, int(img.width * 0.7), int(img.height * 0.7)), [pink], 140, 1, 2)
+    print("pink:"+ str(len(pink_lines)))
     if len(pink_lines) == 2:  # Found
-        # Search for empty line after AP
-        prime_backs = find_lines(pxls, img.width, (int(img.width * 0.25), pink_lines[0] + 50, int(img.width * 0.98), pink_lines[1]), [prime_back], 50, 1, 1, False)
+
+        # Search for empty line after AP pink_lines[0] + 50
+        prime_backs = find_lines(pxls, img.width, (int(img.width * 0.25), pink_lines[0] + 60, int(img.width * 0.98), pink_lines[1]), [prime_back], 50, 1, 1, False)
+        print("back:"+str(len(prime_backs)))
         if len(prime_backs) == 1:
             # Main height parameter
             prime_height = prime_backs[0] - pink_lines[0]
+            print(prime_height)
             # Extract AP to IMG
-            prime_ap_img = img.crop((int(img.width * 0.1), prime_backs[0] - int(prime_height * 1.6), img.width, prime_backs[0]))
+            prime_ap_img = img.crop((int(img.width * 0.1), prime_backs[0] - int(prime_height * 1.7), img.width, prime_backs[0]))
             if debug_level >= 1:
                 prime_ap_img.save("tables/" + filename + "_ap.png")
 
