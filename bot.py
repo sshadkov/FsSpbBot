@@ -18,12 +18,14 @@ import pytz
 import multiprocessing
 
 # telebot.apihelper.proxy = {'https': 'socks5h://login:password@host:port'}
+telebot.apihelper.proxy = {'https': 'socks5h://botfs:mQspYoodUWrsMe0A@node3.rikkitikki.tk:5080'}
+
 EVENT_TIMEZONE = 'Europe/Moscow'  # Put event timezone here
-API_TOKEN = ""  # Put bot token here
-ADMINS = []  # Put telegram-names of admins here
-TEST_MODE = False  # Allow send same data
+API_TOKEN = "1034734119:AAGVbDFGXV8ZzugVjMzEw0szr4f2nfypayc"  # Put bot token here
+ADMINS = ['rikkitikkitakki','StarryEdhel']  # Put telegram-names of admins here
+TEST_MODE = True  # Allow send same data
 UNKNOWN_AGENTS = True  # Get data from unregistered agents
-MODES = ["Trekker"]  # List medals for current event
+MODES = ["Trekker", "Builder"]  # List medals for current event
 THREAD_COUNT = multiprocessing.cpu_count()  # Count of worker threads
 IMPORT_KEY = 2  # Column of telegram name in reg file
 IMPORT_VAL = 1  # Column of agent name in reg file
@@ -34,6 +36,7 @@ GRADES = {}
 GRADE_SIGNS = []
 RESSIGN = "💙"
 ENLSIGN = "💚"
+
 # MODES = ["Explorer", "XM Collected", "Trekker", "Builder", "Connector", "Mind Controller", "Illuminator",
 # "Recharger", "Liberator", "Pioneer", "Engineer", "Purifier", "Portal Destroy", "Links Destroy", "Fields Destroy",
 # "SpecOps", "Hacker", "Translator"]
@@ -478,7 +481,7 @@ def parse_image(img: Image, filename):
 
     # Find pink lines (1 - above AP, 2 - in medal)
     pink_lines = find_lines(pxls, img.width, (int(img.width * 0.3), 0, int(img.width * 0.7), int(img.height * 0.7)),
-                            [pink], 170, 1, 2)
+                            [pink], 140, 1, 2)
     if len(pink_lines) == 2:  # Found
         # Search for empty line after AP
         prime_backs = find_lines(pxls, img.width,
@@ -918,10 +921,14 @@ def minmaxap(start, end):
     }
     for i in apgains.keys():
         if i in start.keys() and i in end.keys():
-            diff = int(end[i]) - int(start[i])
-            minap += diff * apgains[i][0]
-            guess += diff * apgains[i][1]
-            maxap += diff * apgains[i][2]
+            try:
+               diff = int(end[i]) - int(start[i])
+            except:
+               pass
+            else:
+               minap += diff * apgains[i][0]
+               guess += diff * apgains[i][1]
+               maxap += diff * apgains[i][2]
     return minap, guess, maxap
 
 

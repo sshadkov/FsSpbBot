@@ -1,0 +1,16 @@
+#for install:
+#systemctl daemon-reload && systemctl enable bot3 && systemctl start bot3 --no-block
+[Unit]
+Description=fsbot
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/bot/fs_bot/FsSpbBot
+VIRTUAL_ENV=/opt/bot/fs_bot/FsSpbBot
+Environment=PATH=$VIRTUAL_ENV/bin:$PATH
+Restart=on-failure
+ExecStart=/opt/bot/fs_bot/FsSpbBot/bin/python bot.py
+
+
+[Install]
+WantedBy=sysinit.target

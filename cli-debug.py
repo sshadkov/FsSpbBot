@@ -9,6 +9,7 @@ import difflib
 from functools import reduce
 
 MODES = ["Explorer", "XM Collected", "Trekker", "Builder", "Connector", "Mind Controller", "Illuminator", "Recharger", "Liberator", "Pioneer", "Engineer", "Purifier", "Portal Destroy", "Links Destroy", "Fields Destroy", "SpecOps", "Hacker", "Translator"]
+#MODES = ["Trekker"]
 
 
 def str_diff(str1: str, str2: str):
@@ -153,7 +154,7 @@ def parse_image(img: Image, filename):
     pxls = tuple(img.getdata())
 
     # Find pink lines (1 - above AP, 2 - in medal)
-    pink_lines = find_lines(pxls, img.width, (int(img.width * 0.3), 0, int(img.width * 0.7), int(img.height * 0.7)), [pink], 170, 1, 2)
+    pink_lines = find_lines(pxls, img.width, (int(img.width * 0.3), 0, int(img.width * 0.7), int(img.height * 0.7)), [pink], 140, 1, 2)
     if len(pink_lines) == 2:  # Found
         # Search for empty line after AP
         prime_backs = find_lines(pxls, img.width, (int(img.width * 0.25), pink_lines[0] + 50, int(img.width * 0.98), pink_lines[1]), [prime_back], 50, 1, 1, False)
