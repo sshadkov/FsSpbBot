@@ -417,8 +417,11 @@ def doubled(img: Image):
 
 
 def crop_primeap(img: Image):
+    print('crop_img')
     if os.environ.get('OS', '') == 'Windows_NT':
         pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    else:
+        pytesseract.pytesseract.tesseract_cmd = r'/usr/local/bin/tesseract'
 
     pxls = tuple(img.getdata())
     backs = find_lines(pxls, img.width, (0, 0, img.width, img.height), [(0, 0, 0)], 30, 5, 0)
@@ -477,6 +480,7 @@ def crop_primeap(img: Image):
 
 
 def parse_image(img: Image, filename):
+    print("parse_img")
     debug_level = 0
     apregexp = re.compile(r"[^0-9]?([0-9]+)A[PF]")
     pink = (188, 50, 124)
@@ -546,6 +550,7 @@ def parse_image(img: Image, filename):
 
 
 def worker(bot_l, images_l, i):
+    print('run_worker')
     while True:
         time.sleep(0.1)
         changed = False
@@ -589,9 +594,11 @@ def worker(bot_l, images_l, i):
                 ext = ".jpg"
             file_info = bot_l.get_file(file_id)
             downloaded_file = bot_l.download_file(file_info.file_path)
+            print('load_photo')
             f = io.BytesIO(downloaded_file)
             f.seek(0)
             img = Image.open(f)
+            print('start_parse')
             parse_result = parse_image(img, str(file_id) + ".png")
             username = message.chat.username or "#" + str(message.chat.id)
             if message.forward_from:
@@ -648,6 +655,7 @@ def worker(bot_l, images_l, i):
                     new_file.write(downloaded_file)
                 if data["failChat"]:
                     bot_l.forward_message(data["failChat"], message.chat.id, message.message_id)
+
 
 
 def restricted(func):
@@ -1067,6 +1075,7 @@ def process_msg(message):
 def process_photo(message):
     global images
     global nextThread
+    print("sent photo")
     zero_reg(message.chat.id)
     if not data["getStart"] and not data["getEnd"]:
         bot.send_message(message.chat.id, "Я вообще-то сейчас не принимаю скрины!")
