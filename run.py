@@ -200,6 +200,16 @@ def cmd_result(message):
     bot.reply_to(message, txt)
 
 
+@bot.message_handler(commands=["result20"])
+@restricted
+def cmd_result20(message):
+    ap_r, ap_e = select_top3_facton()
+
+    txt = 'Лидеры по AP:\nResistance:\n{}\nEnlightened:\n{}\n'.\
+        format(diff_to_txt(ap_r,20), diff_to_txt(ap_e,20))
+    bot.reply_to(message, txt)
+
+
 @bot.message_handler(commands=["showconfig"])
 @restricted
 def cmd_showconfig(message):
