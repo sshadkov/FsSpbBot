@@ -213,7 +213,7 @@ def add_stat(message, stata):
 
     user.stats.append(stat)
     s.commit()
-    print("ADD STAT #statid_{}".format(stat.stat_id))
+    print("ADD STAT #statid{}".format(stat.stat_id))
 
     return stat.stat_id
 
@@ -256,16 +256,17 @@ def select_top3_facton():
         # print(user.stats[0])
         # print(user.stats[-1])
         # print('DIFF:')
-        try:
-            diff_ap = user.stats[-1].ap - user.stats[0].ap
-            diff_tracker = user.stats[-1].tracker - user.stats[0].tracker
-        except:
-            break
+
         # print('AP_diff:{} Tracker_diff:{}'.\
         #       format(diff_ap, diff_tracker))
         # diff.append((user.stats[0].faction, user.user_id, diff_ap, diff_tracker,
         #              user.stats[0].stat_id, user.stats[-1].stat_id))
         if config.test:
+            try:
+                diff_ap = user.stats[-1].ap - user.stats[0].ap
+                diff_tracker = user.stats[-1].tracker - user.stats[0].tracker
+            except:
+                break
             if user.stats[0].faction == 1:
                 diff_r.append((user.user_agent, user.user_id, diff_ap, diff_tracker,
                          user.stats[0].stat_id, user.stats[-1].stat_id))
@@ -276,25 +277,26 @@ def select_top3_facton():
             stat_start = s.query(Stats)\
                 .filter_by(user_id=user.user_id)\
                 .filter(Stats.data_time >= config.data_time + FS_START)\
-                .filter(Stats.data_time <= config.data_time + FS_STOP).first()
+                .filter(Stats.data_time <= config.data_time + FS_STOP)\
+                .order_by(Stats.data_time).first()
             stat_end = s.query(Stats) \
                 .filter_by(user_id=user.user_id)\
                 .filter(Stats.data_time >= config.data_time + FS_START)\
                 .filter(Stats.data_time <= config.data_time + FS_STOP)\
                 .order_by(Stats.data_time.desc()).first()
-            print(stat_start, '\n', stat_end)
-            if not (stat_start is None and stat_end is None):
+            # print(stat_start, '\n', stat_end)
+            if stat_start is not None and stat_end is not None:
                 diff_ap = stat_end.ap - stat_start.ap
                 diff_tracker = stat_end.tracker - stat_start.tracker
                 if user.stats[0].faction == 1:
                     diff_r.append((user.user_agent, user.user_id, diff_ap, diff_tracker,
-                             user.stats[0].stat_id, user.stats[-1].stat_id))
+                             user.stats_start.stat_id, user.stats_end.stat_id))
                 if user.stats[0].faction == 2:
                     diff_e.append((user.user_agent, user.user_id, diff_ap, diff_tracker,
-                             user.stats[0].stat_id, user.stats[-1].stat_id))
+                             user.stats_start.stat_id, user.stats_end.stat_id))
 
-    for d in diff:
-        print(d)
+    # for d in diff:
+        # print(d)
     ap = sorted(diff, key=lambda d_t: d_t[2], reverse=True)
     tracker = sorted(diff, key=lambda d_t: d_t[3], reverse=True)
 
@@ -304,14 +306,14 @@ def select_top3_facton():
     ap_e = sorted(diff_e, key=lambda d_t: d_t[2], reverse=True)
     tracker_e = sorted(diff_e, key=lambda d_t: d_t[3], reverse=True)
 
-    print('AP Resistance')
-    print_diff(ap_r)
+    # print('AP Resistance')
+    # print_diff(ap_r)
 
     # print('Tracker Resistance')
     # print_diff(tracker_r)
 
-    print('AP Enlightened')
-    print_diff(ap_e)
+    # print('AP Enlightened')
+    # print_diff(ap_e)
 
     # print('Tracker Enlightened')
     # print_diff(tracker_e)
