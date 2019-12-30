@@ -12,10 +12,13 @@ pyvenv.cfg
 pip-selfcheck.json
 
 base.txt
+base.db
+dbase.db
 local.py
 __pycache__
 /.idea/
 results/bad/Screens/
 results/ok/Screens/
 tables/Screens/
-
+TestScreens/*
+TestResult/*

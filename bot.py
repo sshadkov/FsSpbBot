@@ -1027,6 +1027,7 @@ def process_msg(message):
     if username in data["tlgids"].keys():
         agentname = data["tlgids"][username]
         if agentname != result['Agent']:
+            print('{} {}'.format(agentname,result['Agent']))
             bot.reply_to(message, "Это не твоя стата!")
             return
     else:
