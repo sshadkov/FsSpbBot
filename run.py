@@ -1,4 +1,4 @@
-
+import sys
 from PIL import Image
 from functools import wraps, reduce
 import logging

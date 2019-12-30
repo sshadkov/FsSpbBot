@@ -256,8 +256,11 @@ def select_top3_facton():
         # print(user.stats[0])
         # print(user.stats[-1])
         # print('DIFF:')
-        diff_ap = user.stats[-1].ap - user.stats[0].ap
-        diff_tracker = user.stats[-1].tracker - user.stats[0].tracker
+        try:
+            diff_ap = user.stats[-1].ap - user.stats[0].ap
+            diff_tracker = user.stats[-1].tracker - user.stats[0].tracker
+        except:
+            break
         # print('AP_diff:{} Tracker_diff:{}'.\
         #       format(diff_ap, diff_tracker))
         # diff.append((user.stats[0].faction, user.user_id, diff_ap, diff_tracker,
