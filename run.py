@@ -1,19 +1,15 @@
 
 from PIL import Image
 from functools import wraps, reduce
+import logging
 import pytesseract
 import telebot
 from telebot.util import async_dec
 import json
 import re
-import csv
-import difflib
 import time
-import io
 import os
-import _thread
 import datetime
-import pytz
 import multiprocessing
 import constvar
 from constvar import *
@@ -444,5 +440,10 @@ def itime_hmtime(itime):
     return time.strftime('%H:%M', time.localtime(itime))
 
 if __name__ == "__main__":
-
-    bot.polling(none_stop=True)
+    while True:
+        try:
+            bot.polling(none_stop=True)
+        except:
+              print('bolt')
+              logging.error('error: {}'.format(sys.exc_info()[0]))
+              time.sleep(5)
