@@ -290,10 +290,10 @@ def select_top3_facton():
                 diff_tracker = stat_end.tracker - stat_start.tracker
                 if user.stats[0].faction == 1:
                     diff_r.append((user.user_agent, user.user_id, diff_ap, diff_tracker,
-                             user.stats_start.stat_id, user.stats_end.stat_id))
+                             user.stat_start.stat_id, user.stat_end.stat_id))
                 if user.stats[0].faction == 2:
                     diff_e.append((user.user_agent, user.user_id, diff_ap, diff_tracker,
-                             user.stats_start.stat_id, user.stats_end.stat_id))
+                             user.stat_start.stat_id, user.stat_end.stat_id))
 
     # for d in diff:
         # print(d)
