@@ -362,10 +362,10 @@ def get_help(itime: int):
 *{stop_count}* - отправка скрина статистики агента
 *{stop_game}* - конец игровой части
 *{farm_time}* - фарм ресток портала.
-        '''.format(start_count=itime_hmtime(itime+int(FS_GAME)),
+        '''.format(start_count=itime_hmtime(itime+int(FS_GAME)-1),
                    stop_count=itime_hmtime(itime+int(FS_GAME+FS_GAME_TIME)-1),
                    start=itime_hmtime(itime),
-                   start_game=itime_hmtime(itime+int(FS_GAME+FS_GAME_TIME)+1),
+                   start_game=itime_hmtime(itime+int(FS_GAME)),
                    stop_game=itime_hmtime(itime+int(FS_GAME+FS_GAME_TIME)),
                    farm_time=itime_hmtime(itime+int(FARM_START))+" - "+itime_hmtime(itime+int(FARM_STOP))
                    )
