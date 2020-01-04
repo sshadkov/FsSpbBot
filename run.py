@@ -190,6 +190,14 @@ def diff_to_txt(diff, n =3):
     return txt
 
 
+
+@bot.message_handler(commands=["report"])
+@restricted
+def cmd_report(message):
+    txt = 'Report:\n{}'.format(select_report())
+    bot.reply_to(message, txt)
+
+
 @bot.message_handler(commands=["result"])
 @restricted
 def cmd_result(message):
@@ -372,7 +380,7 @@ def get_help(itime: int):
     return txt
 
 
-@bot.message_handler(commands=["help"])
+@bot.message_handler(commands=["help", "start"])
 def cmd_help(message):
     config = get_config()
     txt = get_help(config.data_time)

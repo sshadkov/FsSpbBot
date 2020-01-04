@@ -244,6 +244,46 @@ def print_diff(diff, num=3):
             print('{}: {}'.format(i+1, d))
 
 
+def select_report():
+    config = get_config()
+    users = s.query(Users).all()
+    diff = []
+    txt = ''
+    if len(users):
+        txt += 'agent start_ap start_trekker end_ap end_trekker'
+        for user in users:
+            stat_start = s.query(Stats)\
+                .filter_by(user_id=user.user_id)\
+                .filter(Stats.data_time >= config.data_time + FS_START)\
+                .filter(Stats.data_time <= config.data_time + FS_STOP)\
+                .order_by(Stats.data_time).first()
+            stat_end = s.query(Stats) \
+                .filter_by(user_id=user.user_id)\
+                .filter(Stats.data_time >= config.data_time + FS_START)\
+                .filter(Stats.data_time <= config.data_time + FS_STOP)\
+                .order_by(Stats.data_time.desc()).first()
+            # print(stat_start, '\n', stat_end)
+            if stat_end is not None:
+                stat_end = stat_start
+                txt += '{} {} {} {} {}\n'\
+                    .format(stat_start.user.user_agent,
+                            stat_start.ap,
+                            stat_start.tracker,
+                            stat_end.ap,
+                            stat_end.tracker)
+                #
+                # diff_ap = stat_end.ap - stat_start.ap
+                # diff_tracker = stat_end.tracker - stat_start.tracker
+                # if user.stats[0].faction == 1:
+                #     diff_r.append((user.user_agent, user.user_id, diff_ap, diff_tracker,
+                #              stat_start.stat_id, stat_end.stat_id))
+                # if user.stats[0].faction == 2:
+                #     diff_e.append((user.user_agent, user.user_id, diff_ap, diff_tracker,
+                #              stat_start.stat_id, stat_end.stat_id))
+    else:
+        txt = 'No results'
+    return txt
+
 def select_top3_facton():
     diff = []
     diff_r = []
