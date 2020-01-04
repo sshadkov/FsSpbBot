@@ -263,7 +263,7 @@ def select_report():
                 .filter(Stats.data_time <= config.data_time + FS_STOP)\
                 .order_by(Stats.data_time.desc()).first()
             # print(stat_start, '\n', stat_end)
-            if stat_end is not None:
+            if stat_end is None:
                 stat_end = stat_start
                 txt += '{} {} {} {} {}\n'\
                     .format(stat_start.user.user_agent,
