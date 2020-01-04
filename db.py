@@ -250,7 +250,7 @@ def select_report():
     diff = []
     txt = ''
     if len(users):
-        txt += 'agent start_ap start_trekker end_ap end_trekker'
+        txt += 'agent start_ap start_trekker end_ap end_trekker\n'
         for user in users:
             stat_start = s.query(Stats)\
                 .filter_by(user_id=user.user_id)\
