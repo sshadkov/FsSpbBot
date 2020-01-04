@@ -250,7 +250,7 @@ def select_report():
     diff = []
     txt = ''
     if len(users):
-        txt += 'agent start_ap start_trekker end_ap end_trekker\n'
+        txt += 'agent\tstart_ap\tstart_trekker\tend_ap\tend_trekker\n'
         for user in users:
             stat_start = s.query(Stats)\
                 .filter_by(user_id=user.user_id)\
@@ -265,7 +265,7 @@ def select_report():
             # print(stat_start, '\n', stat_end)
             if stat_end is None:
                 stat_end = stat_start
-                txt += '{} {} {} {} {}\n'\
+                txt += '{}\t{}\t{}\t{}\t{}\n'\
                     .format(stat_start.user.user_agent,
                             stat_start.ap,
                             stat_start.tracker,
