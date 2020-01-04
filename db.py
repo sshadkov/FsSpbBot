@@ -257,20 +257,21 @@ def select_report():
                 .filter(Stats.data_time >= config.data_time + FS_START)\
                 .filter(Stats.data_time <= config.data_time + FS_STOP)\
                 .order_by(Stats.data_time).first()
-            stat_end = s.query(Stats) \
+            stat_end = s.query(Stats)\
                 .filter_by(user_id=user.user_id)\
                 .filter(Stats.data_time >= config.data_time + FS_START)\
                 .filter(Stats.data_time <= config.data_time + FS_STOP)\
                 .order_by(Stats.data_time.desc()).first()
-            # print(stat_start, '\n', stat_end)
-            if stat_end is None:
-                stat_end = stat_start
-                txt += '{}\t{}\t{}\t{}\t{}\n'\
-                    .format(stat_start.user.user_agent,
-                            stat_start.ap,
-                            stat_start.tracker,
-                            stat_end.ap,
-                            stat_end.tracker)
+            print(stat_start, '\n', stat_end)
+            if stat_start is None:
+                continue
+
+            txt += '{}\t{}\t{}\t{}\t{}\n'\
+                .format(user.user_agent,
+                        stat_start.ap,
+                        stat_start.tracker,
+                        stat_end.ap,
+                        stat_end.tracker)
                 #
                 # diff_ap = stat_end.ap - stat_start.ap
                 # diff_tracker = stat_end.tracker - stat_start.tracker
