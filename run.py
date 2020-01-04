@@ -186,7 +186,7 @@ def diff_to_txt(diff, n =3):
         for i, d in enumerate(diff):
             if i >= n:
                 break
-            txt += '{}: {} +AP: {}  /userid{}\n'.format(i+1, d[0], d[2],d[1])
+            txt += '{}: {} +AP: {} +Trekker: {} /userid{}\n'.format(i+1, d[0], d[2], d[3],d[1])
     return txt
 
 
