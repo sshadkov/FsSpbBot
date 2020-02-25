@@ -62,7 +62,8 @@ names_data = {
     'Portals Owned': 'none',
     'Control Fields Active': 'none',
     'Mind Unit Control': 'none',
-    'Current Hacking Streak': 'none'
+    'Current Hacking Streak': 'none',
+    'Didact Fields Created': 'Didact'
 }
 
 

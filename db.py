@@ -120,12 +120,17 @@ def del_stata_by_id(id: int):
     s.query(Stats).filter_by(stat_id=id).delete()
     s.commit()
 
+
 def get_config():
     if s.query(Config).count() < 1:
         s.add(Config(test=True, data_time=0, log_chat=0))
         s.commit()
     config = s.query(Config).first()
     return config
+
+
+def commit():
+    s.commit()
 
 
 def set_teston():
