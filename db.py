@@ -38,32 +38,34 @@ class Stats(Base):
     user_id = Column(Integer, ForeignKey('users.user_id'))
     user = relationship("Users", uselist=False, backref='users')
     timespan = Column('Timespan', String)
-    faction = Column('faction', Integer)
-    ap = Column('AP', Integer)
+    faction = Column('faction', Integer, default=0)
+    ap = Column('AP', Integer, default=0)
+    lvl = Column('Level', Integer, default=0)
     explorer = Column('Explorer', Integer, default=0)
-    xm = Column('XM Collected', Integer, default=0)
-    tracker = Column('Trekker', Integer, default=0)
+    xm_collected = Column('XM Collected', Integer, default=0)
+    trekker = Column('Trekker', Integer, default=0)
     builder = Column('Builder', Integer, default=0)
     connector = Column('Connector', Integer, default=0)
-    mcontroller = Column('Mind Controller', Integer, default=0)
+    mind_controller = Column('Mind Controller', Integer, default=0)
     illuminator = Column('Illuminator', Integer, default=0)
     recharger = Column('Recharger', Integer, default=0)
     liberator = Column('Liberator', Integer, default=0)
     pioneer = Column('Pioneer', Integer, default=0)
     engineer = Column('Engineer', Integer, default=0)
     purifier = Column('Purifier', Integer, default=0)
-    pdestroy = Column('Portal Destroy', Integer, default=0)
-    ldestroy = Column('Links Destroy', Integer, default=0)
-    fdestroy = Column('Fields Destroy', Integer, default=0)
+    portal_destroy = Column('Portal Destroy', Integer, default=0)
+    links_destroy = Column('Links Destroy', Integer, default=0)
+    fields_destroy = Column('Fields Destroy', Integer, default=0)
     specops = Column('SpecOps', Integer, default=0)
-    haker = Column('Hacker', Integer, default=0)
+    hacker = Column('Hacker', Integer, default=0)
     translator = Column('Translator', Integer, default=0)
     data_time = Column(Integer)
+    deleted = Column(Boolean, default=False)
 
     def __repr__(self):
-        return "id: {} user:({}){}, faction: {}, ap: {}, tracker: {}, data_time: {}". \
+        return "id: {} user:({}){}, faction: {}, ap: {}, trekker: {}, data_time: {}". \
             format(self.stat_id, self.user_id, self.user.user_agent,
-                   constvar.factions.get(self.faction, ''), self.ap, self.tracker, self.data_time)
+                   constvar.factions.get(self.faction, ''), self.ap, self.trekker, self.data_time)
 
 
 class Config(Base):
@@ -72,6 +74,10 @@ class Config(Base):
     test = Column(Boolean, default=False)
     data_time = Column(Integer)
     log_chat = Column(Integer, default=0)
+    modes = Column(String, default='')
+    result_after = Column(Integer, default=10)
+    result_before = Column(Integer, default=10)
+    result_mode = Column(Integer, default=3)
 
     def __repr__(self):
         return "TEST: {}\n Date Time Event: {}\n log_chat:{}". \
@@ -117,7 +123,11 @@ def get_stata_by_id(id: int):
 
 
 def del_stata_by_id(id: int):
-    s.query(Stats).filter_by(stat_id=id).delete()
+    stata = s.query(Stats).filter_by(stat_id=id).first()
+    if stata.deleted:
+        stata.deleted = False
+    else:
+        stata.deleted = True
     s.commit()
 
 
@@ -139,11 +149,13 @@ def set_teston():
     print(config.test)
     s.commit()
 
+
 def set_testoff():
     config = get_config()
     config.test = False
     print(config.test)
     s.commit()
+
 
 def set_datetime(itime):
     config = get_config()
@@ -155,21 +167,6 @@ def set_logchat(id: int):
     config = get_config()
     config.log_chat = id
     return s.commit()
-
-
-def select_stata_by_agent_time(agent, stata_time):
-    # rows = s.query(Stats).filter(Stats.user_id == agent, Stats.data_time == stata_time).all()
-    # print(rows)
-    return True
-
-
-def check_stat(stata):
-    fsdatatime = stata['Date'] + ' ' + stata['Time']
-    print('datatime = {}'.format(fsdatatime))
-    print(stata)
-    stata_time = time.strptime(stata['Date'] + ' ' + stata['Time'], '%Y-%m-%d %H:%M:%S')
-    print(select_stata_by_agent_time(stata['Agent'], stata_time))
-    return True
 
 
 def add_stat(message, stata):
@@ -194,25 +191,26 @@ def add_stat(message, stata):
 
     stat = Stats(
         faction=constvar.factions.get(stata['Faction'], 0),
-        ap=stata['AP'],
+        ap=stata['TotalAP'],
+        lvl=stata['Level'],
         explorer=stata.get('Explorer', 0),
         timespan=stata['Timespan'],
-        xm=stata.get('XM Collected', 0),
-        tracker=stata.get('Trekker', 0),
+        xm_collected=stata.get('XM Collected', 0),
+        trekker=stata.get('Trekker', 0),
         builder=stata.get('Builder', 0),
         connector=stata.get('Connector',0),
-        mcontroller=stata.get('Mind Controller', 0),
+        mind_controller=stata.get('Mind Controller', 0),
         illuminator=stata.get('Illuminator', 0),
         recharger=stata.get('Recharger', 0),
         liberator=stata.get('Liberator', 0),
         pioneer=stata.get('Pioneer', 0),
         engineer=stata.get('Engineer', 0),
         purifier=stata.get('Purifier', 0),
-        pdestroy=stata.get('Portal Destroy', 0),
-        ldestroy=stata.get('Links Destroy', 0),
-        fdestroy=stata.get('Fields Destroy', 0),
+        portal_destroy=stata.get('Portal Destroy', 0),
+        links_destroy=stata.get('Links Destroy', 0),
+        fields_destroy=stata.get('Fields Destroy', 0),
         specops=stata.get('SpecOps', 0),
-        haker=stata.get('Hacker', 0),
+        hacker=stata.get('Hacker', 0),
         translator=stata.get('Translator', 0),
         data_time=int(time.mktime(stata_time)))
 
@@ -222,6 +220,7 @@ def add_stat(message, stata):
 
     return stat.stat_id
 
+
 def select_users():
     rows = s.query(Users).all()
     result = [{'user_id': rows[i].user_id, 'user_name': rows[i].user_name,
@@ -230,14 +229,17 @@ def select_users():
               for i in range(len(rows))]
     return result
 
+
 def select_stats():
     rows = s.query(Stats).all()
     for row in rows:
         print('id: {} user_id: {}, datatime: {}'.format(row.stat_id, row.user_id, row.data_time))
         print(row.user.user_agent)
 
+
 def get_conifg():
     config = s.query(Config).first()
+
 
 def print_diff(diff, num=3):
     if len(diff) < 1:
@@ -249,122 +251,68 @@ def print_diff(diff, num=3):
             print('{}: {}'.format(i+1, d))
 
 
-def select_report():
+def select_top():
     config = get_config()
     users = s.query(Users).all()
-    diff = []
-    txt = ''
-    if len(users):
-        txt += 'agent\tstart_ap\tstart_trekker\tend_ap\tend_trekker\n'
-        for user in users:
-            stat_start = s.query(Stats)\
-                .filter_by(user_id=user.user_id)\
-                .filter(Stats.data_time >= config.data_time + FS_START)\
-                .filter(Stats.data_time <= config.data_time + FS_STOP)\
-                .order_by(Stats.data_time).first()
-            stat_end = s.query(Stats)\
-                .filter_by(user_id=user.user_id)\
-                .filter(Stats.data_time >= config.data_time + FS_START)\
-                .filter(Stats.data_time <= config.data_time + FS_STOP)\
-                .order_by(Stats.data_time.desc()).first()
-            print(stat_start, '\n', stat_end)
-            if stat_start is None:
-                continue
+    data = []
+    modes = config.modes.strip(',').split(',')
 
-            txt += '{}\t{}\t{}\t{}\t{}\n'\
-                .format(user.user_agent,
-                        stat_start.ap,
-                        stat_start.tracker,
-                        stat_end.ap,
-                        stat_end.tracker)
-                #
-                # diff_ap = stat_end.ap - stat_start.ap
-                # diff_tracker = stat_end.tracker - stat_start.tracker
-                # if user.stats[0].faction == 1:
-                #     diff_r.append((user.user_agent, user.user_id, diff_ap, diff_tracker,
-                #              stat_start.stat_id, stat_end.stat_id))
-                # if user.stats[0].faction == 2:
-                #     diff_e.append((user.user_agent, user.user_id, diff_ap, diff_tracker,
-                #              stat_start.stat_id, stat_end.stat_id))
-    else:
-        txt = 'No results'
-    return txt
-
-def select_top3_facton():
-    diff = []
-    diff_r = []
-    diff_e = []
-    config = get_config()
-    users = s.query(Users).all()
-    # users = s.query(Users).filter(Users.stats.data_time >= FS_START and Users.stats.data_time <= FS_STOP).all()
-    # int(time.time()) >= config.data_time + FS_START and int(time.time()) <= config.data_time + FS_STOP
     for user in users:
-        # print(user.stats[0])
-        # print(user.stats[-1])
-        # print('DIFF:')
-
-        # print('AP_diff:{} Tracker_diff:{}'.\
-        #       format(diff_ap, diff_tracker))
-        # diff.append((user.stats[0].faction, user.user_id, diff_ap, diff_tracker,
-        #              user.stats[0].stat_id, user.stats[-1].stat_id))
         if config.test:
-            try:
-                diff_ap = user.stats[-1].ap - user.stats[0].ap
-                diff_tracker = user.stats[-1].tracker - user.stats[0].tracker
-            except:
-                break
-            if user.stats[0].faction == 1:
-                diff_r.append((user.user_agent, user.user_id, diff_ap, diff_tracker,
-                         user.stats[0].stat_id, user.stats[-1].stat_id))
-            if user.stats[0].faction == 2:
-                diff_e.append((user.user_agent, user.user_id, diff_ap, diff_tracker,
-                         user.stats[0].stat_id, user.stats[-1].stat_id))
-        else:
-            stat_start = s.query(Stats)\
-                .filter_by(user_id=user.user_id)\
-                .filter(Stats.data_time >= config.data_time + FS_START)\
-                .filter(Stats.data_time <= config.data_time + FS_STOP)\
+            # выборка первой и последней статы
+            stat_start = s.query(Stats) \
+                .filter_by(user_id=user.user_id, deleted=False) \
                 .order_by(Stats.data_time).first()
             stat_end = s.query(Stats) \
-                .filter_by(user_id=user.user_id)\
-                .filter(Stats.data_time >= config.data_time + FS_START)\
-                .filter(Stats.data_time <= config.data_time + FS_STOP)\
+                .filter_by(user_id=user.user_id, deleted=False) \
                 .order_by(Stats.data_time.desc()).first()
-            # print(stat_start, '\n', stat_end)
-            if stat_start is not None and stat_end is not None:
-                diff_ap = stat_end.ap - stat_start.ap
-                diff_tracker = stat_end.tracker - stat_start.tracker
-                if user.stats[0].faction == 1:
-                    diff_r.append((user.user_agent, user.user_id, diff_ap, diff_tracker,
-                             stat_start.stat_id, stat_end.stat_id))
-                if user.stats[0].faction == 2:
-                    diff_e.append((user.user_agent, user.user_id, diff_ap, diff_tracker,
-                             stat_start.stat_id, stat_end.stat_id))
+        else:
+            stat_start = s.query(Stats)\
+                .filter_by(user_id=user.user_id, deleted=False) \
+                .filter(Stats.data_time >= config.data_time + FS_START - int(config.result_before)*60)\
+                .filter(Stats.data_time <= config.data_time + FS_STOP + int(config.result_after)*60)\
+                .order_by(Stats.data_time).first()
+            stat_end = s.query(Stats) \
+                .filter_by(user_id=user.user_id, deleted=False) \
+                .filter(Stats.data_time >= config.data_time + FS_START - int(config.result_before)*60)\
+                .filter(Stats.data_time <= config.data_time + FS_STOP + int(config.result_after)*60)\
+                .order_by(Stats.data_time.desc()).first()
 
-    # for d in diff:
-        # print(d)
-    ap = sorted(diff, key=lambda d_t: d_t[2], reverse=True)
-    tracker = sorted(diff, key=lambda d_t: d_t[3], reverse=True)
+        if stat_start is not None and stat_end is not None:
+            diff_ap = stat_end.ap - stat_start.ap
+            diff_trekker = stat_end.trekker - stat_start.trekker
+            # Проверка на подмену данных
+            minap = 0
+            maxap = 0
+            guess = 0
 
-    ap_r = sorted(diff_r, key=lambda d_t: d_t[2], reverse=True)
-    tracker_r = sorted(diff_r, key=lambda d_t: d_t[3], reverse=True)
+            for i in apgains.keys():
+                m = getattr(stat_end, i.lower().replace(' ', '_')) - getattr(stat_start, i.lower().replace(' ', '_'))
+                minap += m * apgains[i][0]
+                guess += m * apgains[i][1]
+                maxap += m * apgains[i][2]
 
-    ap_e = sorted(diff_e, key=lambda d_t: d_t[2], reverse=True)
-    tracker_e = sorted(diff_e, key=lambda d_t: d_t[3], reverse=True)
+            if diff_ap < minap or diff_ap > maxap:
+                bug = True
+            else:
+                bug = False
 
-    # print('AP Resistance')
-    # print_diff(ap_r)
+            mo = {m: getattr(stat_end, m, 0)-getattr(stat_start, m, 0) for m in modes}
+            u = {'agent': user.user_agent,
+                 'uid': user.user_id,
+                 'faction': user.stats[-1].faction,
+                 'diff_ap': diff_ap,
+                 'diff_trekker': diff_trekker,
+                 'bug': bug,
+                 'start': {'ap': stat_start.ap, 'timestamp': stat_start.timespan,
+                           'lvl': stat_start.lvl, 'trekker': stat_start.trekker},
+                 'end': {'ap': stat_end.ap, 'timestamp': stat_start.timespan,
+                         'lvl': stat_end.lvl, 'trekker': stat_end.trekker}
+                 }
+            u.update(mo)
+            data.append(u)
 
-    # print('Tracker Resistance')
-    # print_diff(tracker_r)
-
-    # print('AP Enlightened')
-    # print_diff(ap_e)
-
-    # print('Tracker Enlightened')
-    # print_diff(tracker_e)
-
-    return ap_r, ap_e
+    return data
 
 
 if __name__ == '__main__':
@@ -372,4 +320,6 @@ if __name__ == '__main__':
     print("Версия SQLAlchemy:", sqlalchemy.__version__)
     print(select_users())
     print("STATS:")
-    select_top3_facton()
+    data = select_top()
+    for d in data:
+        print(d)

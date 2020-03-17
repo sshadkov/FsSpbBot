@@ -1,12 +1,39 @@
 RESSIGN = "💙"
 ENLSIGN = "💚"
+OK = "✅"
+BUG = '🐞'
 
 FS_GAME = +1*60*60   # время замера 1 час
 FS_GAME_TIME = 2*60*60
-FS_START = FS_GAME-10*60  # за 10 минут начать принимать скрины
-FS_STOP = FS_GAME+FS_GAME_TIME+10*60
+FS_START = FS_GAME  # за 10 минут начать принимать скрины
+FS_STOP = FS_GAME+FS_GAME_TIME
 FARM_START = FS_GAME+FS_GAME_TIME+30*60
 FARM_STOP = FS_GAME+FS_GAME_TIME+60*60
+
+rm_mode = {0: RESSIGN + ENLSIGN,
+           1: RESSIGN,
+           2: ENLSIGN,
+           3: RESSIGN + ' + ' + ENLSIGN,
+           4: RESSIGN + ENLSIGN + ' + ' + RESSIGN,
+           5: RESSIGN + ENLSIGN + ' + ' + ENLSIGN,
+           6: RESSIGN + ENLSIGN + ' + ' + RESSIGN + ' + ' + ENLSIGN,
+           }
+
+apgains = {
+        "Builder": (65, 150, 375),
+        "Hacker": (0, 50, 400),
+        "Mind Controller": (1250, 1250, 1250),
+        "Liberator": (500, 500, 500),
+        "Purifier": (75, 75, 75),
+        "Links Destroy": (187, 187, 187),
+        "Fields Destroy": (750, 750, 750),
+        "Engineer": (125, 125, 125),
+        "Translator": (0, 50, 0)
+    }
+
+MODES = ["Explorer", "XM Collected", "Trekker", "Builder", "Connector", "Mind Controller", "Illuminator",
+"Recharger", "Liberator", "Pioneer", "Engineer", "Purifier", "Portal Destroy", "Links Destroy", "Fields Destroy",
+"SpecOps", "Hacker", "Translator"]
 
 
 
