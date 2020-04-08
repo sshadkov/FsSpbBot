@@ -525,7 +525,8 @@ def cmd_ahelp(message):
 /set_rm - выбор режима результатов
 /showuserXX - посмотреть статистику агента ХХ(id в базе)
 /showstatXX - посмотреть статистику ХХ (id в базе)
-/delstatXX - удалить статистику ХХ (id в базе) 
+/delstatXX - удалить статистику ХХ (id в базе)
+/report - отчет для NIA
 '''
     bot.reply_to(message, txt)
 
@@ -568,6 +569,10 @@ def process_msg(message):
     stata = parse_text(message)
     config = get_config()
     txt_log = ''
+
+    # не парсить тексты в логчате
+    if message.chat.id == config.log_chat:
+        return 0
 
     if stata['success']:
         try:
